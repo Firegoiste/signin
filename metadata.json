@@ -1,0 +1,5 @@
+{
+  "name": "Remix: 会议实时签到系统",
+  "description": "包含3D粒子大屏、移动端签到和管理后台的完整会议签到解决方案",
+  "requestFramePermissions": []
+}
