@@ -12,13 +12,18 @@ export default defineConfig(({mode}) => {
     },
     resolve: {
       alias: {
-        '@': path.resolve(__dirname, '.'),
+        '@': path.resolve(__dirname, './src'),
+        'three': path.resolve(__dirname, 'node_modules/three'),
+        '@react-three/fiber': path.resolve(__dirname, 'node_modules/@react-three/fiber'),
+        '@react-three/drei': path.resolve(__dirname, 'node_modules/@react-three/drei'),
       },
     },
+    optimizeDeps: {
+      include: ['three', '@react-three/fiber', '@react-three/drei'],
+    },
     server: {
-      // HMR is disabled in AI Studio via DISABLE_HMR env var.
-      // Do not modifyâfile watching is disabled to prevent flickering during agent edits.
       hmr: false,
+      allowedHosts: ['signin-production-7cbe.up.railway.app', '.up.railway.app'],
     },
   };
 });
