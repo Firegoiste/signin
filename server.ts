@@ -12,6 +12,7 @@ async function initDatabase() {
   const SQL = await initSqlJs();
   const dbPath = "checkin.db";
 
+  // 尝试加载已有数据库
   if (fs.existsSync(dbPath)) {
     const fileBuffer = fs.readFileSync(dbPath);
     db = new SQL.Database(fileBuffer);
@@ -19,6 +20,7 @@ async function initDatabase() {
     db = new SQL.Database();
   }
 
+  // 创建表
   db.run(`
     CREATE TABLE IF NOT EXISTS checkins (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -31,6 +33,7 @@ async function initDatabase() {
     )
   `);
 
+  // 保存数据库
   saveDatabase();
 }
 
@@ -63,6 +66,7 @@ async function startServer() {
       return res.status(400).json({ error: "请输入有效的11位手机号" });
     }
 
+    // 检查是否已签到
     if (phone !== '15601323970') {
       const stmt = db.prepare("SELECT id FROM checkins WHERE phone = ?");
       stmt.bind([phone]);
@@ -77,6 +81,7 @@ async function startServer() {
       db.run("INSERT INTO checkins (name, company, position, phone, province) VALUES (?, ?, ?, ?, ?)",
         [name, company, position, phone, province || '']);
 
+      // 获取插入的ID
       const lastId = db.exec("SELECT last_insert_rowid() as id")[0].values[0][0];
 
       const newCheckin = {
@@ -106,7 +111,9 @@ async function startServer() {
 
   app.get("/api/checkins", (req, res) => {
     const result = db.exec("SELECT * FROM checkins ORDER BY created_at DESC");
-    if (!result[0]) return res.json([]);
+    if (!result[0]) {
+      return res.json([]);
+    }
     const columns = result[0].columns;
     const rows = result[0].values.map(row => {
       const obj: any = {};
